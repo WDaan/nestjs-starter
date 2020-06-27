@@ -4,8 +4,8 @@ import { Injectable } from '@nestjs/common'
 export class AppService {
     getVersion(): Object {
         return {
-            "info" : "NestJS API",
-            "version": process.env.npm_package_version
+            info: 'NestJS API',
+            version: process.env.npm_package_version
         }
     }
 }

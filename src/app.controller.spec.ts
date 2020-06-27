@@ -15,8 +15,11 @@ describe('AppController', () => {
     })
 
     describe('root', () => {
-        it('should return "Hello World!"', () => {
-            expect(appController.getHello()).toBe('Hello World!')
+        it('should return info + version"', () => {
+            expect(appController.getVersion()).toEqual({
+                info: 'NestJS API',
+                version: process.env.npm_package_version
+            })
         })
     })
 })

@@ -25,7 +25,7 @@ import {
 @ApiTags('Items')
 @Controller('items')
 export class ItemsController {
-    constructor(private readonly itemsService: ItemsService) { }
+    constructor(private readonly itemsService: ItemsService) {}
 
     @Get()
     @ApiOperation({ summary: 'Get all items' })
@@ -37,7 +37,7 @@ export class ItemsController {
     @ApiQuery({ name: 'limit' })
     @ApiOperation({ summary: 'Get all Items' })
     @ApiQuery({ name: 'limit', required: false })
-    async findAll(@Query('limit') limit: number): Promise<Item[]> {
+    async findAll(@Query('limit') limit: number = 10): Promise<Item[]> {
         return await this.itemsService.findAll(limit)
     }
 
@@ -76,7 +76,6 @@ export class ItemsController {
     async delete(@Query('id') id: string): Promise<Item> {
         return await this.itemsService.delete(id)
     }
-
 
     @Put(':id')
     @ApiOperation({ summary: 'Update an item by id' })
