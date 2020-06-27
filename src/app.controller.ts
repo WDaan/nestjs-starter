@@ -1,10 +1,14 @@
-import { Controller, Get } from '@nestjs/common'
-import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { Controller, Body, Get, Request, Post, UseGuards } from '@nestjs/common'
+import { ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger'
 import { AppService } from './app.service'
+import { AuthService } from './auth/auth.service'
 
 @Controller()
 export class AppController {
-    constructor(private readonly appService: AppService) {}
+    constructor(
+        private readonly appService: AppService,
+        private authService: AuthService
+    ) {}
 
     @Get()
     @ApiOperation({ summary: 'Get API version' })

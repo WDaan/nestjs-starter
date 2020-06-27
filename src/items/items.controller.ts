@@ -6,22 +6,20 @@ import {
     Delete,
     Body,
     Param,
-    Query
+    Query,
+    UseGuards
 } from '@nestjs/common'
 import { ItemDto } from './dto/item.dto'
 import { UpdateItemDto } from './dto/update-item.dto'
 import { ItemsService } from './items.service'
 import { Item } from './interfaces/item.interface'
 import {
-    ApiBearerAuth,
     ApiOperation,
     ApiResponse,
     ApiTags,
-    ApiParam,
     ApiBody,
     ApiQuery
 } from '@nestjs/swagger'
-
 @ApiTags('Items')
 @Controller('items')
 export class ItemsController {
