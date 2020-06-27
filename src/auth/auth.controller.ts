@@ -1,14 +1,12 @@
-import {
-    Controller,
-    Post,
-    Body,
-    UseGuards,
-    Get,
-    Request
-} from '@nestjs/common'
+import { Controller, Post, Body, UseGuards, Get, Request } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { LoginUserDto } from '../users/dto/login-user.dto'
-import { ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger'
+import {
+    ApiOperation,
+    ApiResponse,
+    ApiBody,
+    ApiBearerAuth
+} from '@nestjs/swagger'
 import { UsersService } from 'src/users/users.service'
 import { JwtPayload } from './interfaces/jwt-payload.interface'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
@@ -19,7 +17,7 @@ export class AuthController {
     constructor(
         private readonly authService: AuthService,
         private readonly usersService: UsersService
-    ) { }
+    ) {}
 
     @Post()
     @ApiOperation({ summary: 'Login' })
@@ -49,8 +47,8 @@ export class AuthController {
         return await this.usersService.create(createUserDto)
     }
 
-    @UseGuards(JwtAuthGuard)
     @Get('me')
+    @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     getProfile(@Request() req) {
         return this.usersService.sanitizeUser(req.user)

@@ -5,9 +5,9 @@ import {
     Put,
     Delete,
     Body,
-    Param,
     Query,
-    UseGuards
+    Headers,
+    Param
 } from '@nestjs/common'
 import { ItemDto } from './dto/item.dto'
 import { UpdateItemDto } from './dto/update-item.dto'
@@ -20,10 +20,21 @@ import {
     ApiBody,
     ApiQuery
 } from '@nestjs/swagger'
+
+import { AuthService } from 'src/auth/auth.service'
+import { UsersService } from 'src/users/users.service'
+import { JwtPayload } from 'src/auth/interfaces/jwt-payload.interface'
+import { User } from 'src/users/interfaces/user.interface'
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard'
+
 @ApiTags('Items')
 @Controller('items')
 export class ItemsController {
-    constructor(private readonly itemsService: ItemsService) {}
+    constructor(
+        private readonly itemsService: ItemsService,
+        private readonly authService: AuthService,
+        private readonly usersService: UsersService
+    ) { }
 
     @Get()
     @ApiOperation({ summary: 'Get all items' })
@@ -32,11 +43,29 @@ export class ItemsController {
         description: 'The found record',
         type: [ItemDto]
     })
-    @ApiQuery({ name: 'limit' })
     @ApiOperation({ summary: 'Get all Items' })
     @ApiQuery({ name: 'limit', required: false })
     async findAll(@Query('limit') limit: number = 10): Promise<Item[]> {
-        return await this.itemsService.findAll(limit)
+        return await this.itemsService.findAll(Number(limit))
+    }
+
+    @Get('me')
+    @ApiOperation({ summary: 'Get all items' })
+    @ApiResponse({
+        status: 200,
+        description: 'The found record',
+        type: [ItemDto]
+    })
+    @ApiOperation({ summary: 'Get all items of the user' })
+    @ApiQuery({ name: 'limit', required: false })
+    async listMine(@Headers() headers, @Query('limit') limit: number = 10): Promise<any> {
+        let decoded: JwtPayload = this.authService.decodeToken(
+            headers.authorization
+        )
+        let user: User = await this.usersService.findByPayload(decoded)
+
+        return await this.itemsService.findByOwner(user._id, limit);
+
     }
 
     @Get(':id')
@@ -47,7 +76,7 @@ export class ItemsController {
         type: ItemDto
     })
     @ApiQuery({ name: 'id' })
-    async findOne(@Query('id') id: string): Promise<Item> {
+    async findOne(@Param('id') id: any): Promise<any> {
         return await this.itemsService.findOne(id)
     }
 
@@ -59,8 +88,18 @@ export class ItemsController {
         description: 'The found record',
         type: ItemDto
     })
-    async create(@Body() createItemDto: ItemDto): Promise<Item> {
-        return await this.itemsService.create(createItemDto)
+    async create(
+        @Headers() headers,
+        @Body() createItemDto: ItemDto
+    ): Promise<any> {
+        let user: User;
+        if (headers.authorization) {
+            let decoded: JwtPayload = this.authService.decodeToken(
+                headers.authorization
+            )
+            user = await this.usersService.findByPayload(decoded)
+        }
+        return await this.itemsService.create(createItemDto, user)
     }
 
     @Delete(':id')
@@ -71,7 +110,7 @@ export class ItemsController {
         type: ItemDto
     })
     @ApiQuery({ name: 'id' })
-    async delete(@Query('id') id: string): Promise<Item> {
+    async delete(@Param('id') id: string): Promise<Item> {
         return await this.itemsService.delete(id)
     }
 

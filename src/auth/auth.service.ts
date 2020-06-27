@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { UsersService } from '../users/users.service'
-import { sign } from 'jsonwebtoken'
+import { sign, verify } from 'jsonwebtoken'
 
 import { JwtPayload } from './interfaces/jwt-payload.interface'
 
@@ -17,5 +17,9 @@ export class AuthService {
 
     async validateUser(payload: JwtPayload) {
         return await this.usersService.findByPayload(payload)
+    }
+
+    decodeToken(token: string): JwtPayload {
+        return <JwtPayload>verify(token.split(' ')[1], process.env.SECRET)
     }
 }

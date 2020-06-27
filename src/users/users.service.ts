@@ -10,22 +10,21 @@ import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectModel('User') private userModel: Model<User>) { }
+    constructor(@InjectModel('User') private userModel: Model<User>) {}
 
     async create(createUserDto: CreateUserDto) {
         let createdUser = new this.userModel(createUserDto)
         return await createdUser.save()
     }
 
-    async findByPayload(payload: JwtPayload) {
+    async findByPayload(payload: JwtPayload): Promise<User> {
         const { email } = payload
         return await this.userModel.findOne({ email })
     }
 
     async findByLogin(userDTO: LoginUserDto) {
         const { email, password } = userDTO
-        const user = await this.userModel
-            .findOne({ email })
+        const user = await this.userModel.findOne({ email })
         if (!user) {
             throw new HttpException(
                 'Invalid credentials',
@@ -47,7 +46,9 @@ export class UsersService {
         let { firstname, lastname, email } = user
 
         return {
-            firstname, lastname, email
+            firstname,
+            lastname,
+            email
         }
     }
 }
