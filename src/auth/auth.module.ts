@@ -3,7 +3,6 @@ import { PassportModule } from '@nestjs/passport'
 import { JwtModule } from '@nestjs/jwt'
 import { AuthService } from './auth.service'
 import { UsersModule } from '../users/users.module'
-import { LocalStrategy } from './strategies/local.strategy'
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { AuthController } from './auth.controller'
 
@@ -19,7 +18,7 @@ dotenv.config()
             signOptions: { expiresIn: '1800s' }
         })
     ],
-    providers: [AuthService, LocalStrategy, JwtStrategy],
+    providers: [AuthService, JwtStrategy],
     exports: [AuthService],
     controllers: [AuthController]
 })
